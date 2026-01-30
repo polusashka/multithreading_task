@@ -15,12 +15,13 @@ const (
 // generateRandomElements generates random elements.
 func generateRandomElements(size int) []int {
 	if size <= 0 {
-		return []int{}
+		return nil
 	}
 	src := rand.NewSource(time.Now().Unix())
+	rnd := rand.New(src)
 	slice := make([]int, size)
 	for i := range slice {
-		slice[i] = int(src.Int63())
+		slice[i] = rnd.Int()
 	}
 	return slice
 }
@@ -30,13 +31,13 @@ func maximum(data []int) int {
 	if len(data) == 0 {
 		return 0
 	}
-	max := data[0]
+	m := data[0]
 	for _, v := range data {
-		if v > max {
-			max = v
+		if v > m {
+			m = v
 		}
 	}
-	return max
+	return m
 }
 
 // maxChunks returns the maximum number of elements in a chunks.
@@ -60,13 +61,8 @@ func maxChunks(data []int) int {
 		wg.Add(1)
 		go func(part []int) {
 			defer wg.Done()
-			max := part[0]
-			for _, v := range part {
-				if v > max {
-					max = v
-				}
-			}
-			maxInParts[i] = max
+			m := maximum(part)
+			maxInParts[i] = m
 		}(parts[i])
 	}
 	wg.Wait()
